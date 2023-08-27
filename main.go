@@ -24,6 +24,8 @@ func main() {
 			eg.POST("/selection", controller.ArmSelectionController)
 		}
 	}
+
+	router.GET("/", healthCheck)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	router.Run("localhost:8090")
 }

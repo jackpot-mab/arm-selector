@@ -2,8 +2,11 @@ package policy
 
 import "math"
 
+// UCB1 is a policy that computes a mean_reward or predicted_reward for a context,
+// along with a confidence radius. Then the algorithm selects the higher mean_reward + confidence_radius
+// arm.
 type UCB1 struct {
-	// PARAMS?
+	// Se puede agregar un parámetro de regularización configurable.
 }
 
 func MakeUCB1() Policy {
