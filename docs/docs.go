@@ -16,9 +16,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/select": {
-            "get": {
-                "description": "select arm",
+        "/arm/selection": {
+            "post": {
+                "description": "Select the arm based on the experiment policy.",
                 "consumes": [
                     "application/json"
                 ],
@@ -29,6 +29,17 @@ const docTemplate = `{
                     "arm-selector"
                 ],
                 "summary": "select arm",
+                "parameters": [
+                    {
+                        "description": "Context Data",
+                        "name": "context",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/policy.Context"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -38,6 +49,12 @@ const docTemplate = `{
                     }
                 }
             }
+        }
+    },
+    "definitions": {
+        "policy.Context": {
+            "type": "object",
+            "additionalProperties": true
         }
     }
 }`

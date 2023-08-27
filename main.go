@@ -21,7 +21,7 @@ func main() {
 	{
 		eg := v1.Group("/arm")
 		{
-			eg.GET("/selection", controller.ArmSelectionController)
+			eg.POST("/selection", controller.ArmSelectionController)
 		}
 	}
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))

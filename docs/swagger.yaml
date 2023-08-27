@@ -1,11 +1,22 @@
+definitions:
+  policy.Context:
+    additionalProperties: true
+    type: object
 info:
   contact: {}
 paths:
-  /select:
-    get:
+  /arm/selection:
+    post:
       consumes:
       - application/json
-      description: select arm
+      description: Select the arm based on the experiment policy.
+      parameters:
+      - description: Context Data
+        in: body
+        name: context
+        required: true
+        schema:
+          $ref: '#/definitions/policy.Context'
       produces:
       - application/json
       responses:

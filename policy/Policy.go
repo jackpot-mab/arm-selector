@@ -1,17 +1,24 @@
 package policy
 
 type Experiment struct {
-	Id   string
-	Type StrategyType
-	Arms []Arm
+	Id     string
+	Type   string
+	Arms   []Arm
+	Params map[string][]interface{}
 }
 
 type Arm struct {
 	Name string
 }
 
-type Context map[string]string
+type ExpectedReward struct {
+	Pulls int
+	Arm   Arm
+	Value float64 // TODO evaluar bien qué necesitamos del modelo.
+}
+
+type Context map[string]interface{}
 
 type Policy interface {
-	MakeDecision(exp Experiment, decisionContext Context) Arm
+	SelectArm(armsExpectedRewards []ExpectedReward) *Arm
 }

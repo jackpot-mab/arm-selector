@@ -4,9 +4,9 @@
         "contact": {}
     },
     "paths": {
-        "/select": {
-            "get": {
-                "description": "select arm",
+        "/arm/selection": {
+            "post": {
+                "description": "Select the arm based on the experiment policy.",
                 "consumes": [
                     "application/json"
                 ],
@@ -17,6 +17,17 @@
                     "arm-selector"
                 ],
                 "summary": "select arm",
+                "parameters": [
+                    {
+                        "description": "Context Data",
+                        "name": "context",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/policy.Context"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -26,6 +37,12 @@
                     }
                 }
             }
+        }
+    },
+    "definitions": {
+        "policy.Context": {
+            "type": "object",
+            "additionalProperties": true
         }
     }
 }
