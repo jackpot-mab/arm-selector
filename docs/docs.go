@@ -16,7 +16,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/arm/selection": {
+        "/arm/selection/{experiment_id}": {
             "post": {
                 "description": "Select the arm based on the experiment policy.",
                 "consumes": [
@@ -30,6 +30,13 @@ const docTemplate = `{
                 ],
                 "summary": "select arm",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "ID of the current experiment.",
+                        "name": "experiment_id",
+                        "in": "path",
+                        "required": true
+                    },
                     {
                         "description": "Context Data",
                         "name": "context",

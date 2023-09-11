@@ -4,8 +4,13 @@ import (
 	"github.com/gin-gonic/gin"
 	"jackpot-mab/arm-selector/id"
 	"jackpot-mab/arm-selector/policy"
+	"jackpot-mab/arm-selector/service"
 	"net/http"
 )
+
+type ArmSelectorController struct {
+	ExperimentsParamsService service.ExperimentParamsService
+}
 
 // @BasePath /api/v1
 
@@ -15,23 +20,28 @@ import (
 // @Description Select the arm based on the experiment policy.
 // @Tags arm-selector
 // @Accept json
+// @Param experiment_id path string true "ID of the current experiment."
 // @Param context body policy.Context true "Context Data"
 // @Produce json
 // @Success 200 {string} Arm
-// @Router /arm/selection [post]
-func ArmSelectionController(g *gin.Context) {
+// @Router /arm/selection/{experiment_id} [post]
+func (a *ArmSelectorController) ArmSelectionController(g *gin.Context) {
 
 	var decisionContext policy.Context
 	if err := g.BindJSON(&decisionContext); err != nil {
+		g.JSON(http.StatusInternalServerError, err)
 		return
 	}
 
+	experimentId := g.Param("experiment_id")
+
 	// Get experiment data from external service
-	mockData := policy.Experiment{
-		Id:     "1-EEE-3",
-		Type:   "epsilon_greedy",
-		Arms:   []policy.Arm{{Name: "A"}, {Name: "B"}, {Name: "C"}},
-		Params: map[string][]interface{}{"alpha": {0.2}},
+	experimentData, err := a.ExperimentsParamsService.GetExperiment(experimentId)
+
+	if err != nil {
+		g.JSON(http.StatusInternalServerError, gin.H{"error": "There was an error obtaining experiment from " +
+			"experiment-params service, check if the experiment exists and its config is correct. Error: " + err.Error()})
+		return
 	}
 
 	// Get the value returned by the model
@@ -52,7 +62,7 @@ func ArmSelectionController(g *gin.Context) {
 			Value: 308,
 		}}
 
-	currentPolicy, _ := policy.MakePolicy(mockData)
+	currentPolicy, _ := policy.MakePolicy(experimentData)
 
 	armSelected := currentPolicy.SelectArm(mockExpectedReward)
 

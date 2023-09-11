@@ -5,12 +5,17 @@ definitions:
 info:
   contact: {}
 paths:
-  /arm/selection:
+  /arm/selection/{experiment_id}:
     post:
       consumes:
       - application/json
       description: Select the arm based on the experiment policy.
       parameters:
+      - description: ID of the current experiment.
+        in: path
+        name: experiment_id
+        required: true
+        type: string
       - description: Context Data
         in: body
         name: context

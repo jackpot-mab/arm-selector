@@ -1,14 +1,14 @@
 package policy
 
 type Experiment struct {
-	Id     string
-	Type   string
-	Arms   []Arm
-	Params map[string][]interface{}
+	ExperimentId string                 `json:"experiment_id"`
+	PolicyType   string                 `json:"policy_type"`
+	Arms         []Arm                  `json:"arms"`
+	Parameters   map[string]interface{} `json:"parameters"`
 }
 
 type Arm struct {
-	Name string
+	Name string `json:"name"`
 }
 
 type ExpectedReward struct {

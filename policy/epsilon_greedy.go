@@ -7,19 +7,19 @@ import (
 )
 
 type EpsilonGreedy struct {
-	alpha float32
+	alpha float64
 	seed  *int64
 }
 
-func MakeEpsilonGreedy(experimentParams map[string][]interface{}) (*EpsilonGreedy, error) {
+func MakeEpsilonGreedy(experimentParams map[string]interface{}) (*EpsilonGreedy, error) {
 
-	alpha, ok := experimentParams["alpha"][0].(float32)
+	alpha, ok := experimentParams["alpha"].(float64)
 	if !ok {
 		return &EpsilonGreedy{alpha: 0.5}, errors.New("missing parameter alpha")
 	}
 
 	if experimentParams["seed"] != nil {
-		seed := experimentParams["seed"][0].(int64)
+		seed := experimentParams["seed"].(int64)
 		return &EpsilonGreedy{alpha: alpha, seed: &seed}, nil
 	}
 
@@ -35,7 +35,7 @@ func (e *EpsilonGreedy) SelectArm(armsExpectedRewards []ExpectedReward) *Arm {
 
 	// rolls a dice to explore or to exploit
 	r := rand.New(rand.NewSource(seed))
-	dice := r.Float32()
+	dice := r.Float64()
 
 	var selection *Arm
 

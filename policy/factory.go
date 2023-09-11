@@ -9,13 +9,13 @@ const (
 
 func MakePolicy(experimentData Experiment) (Policy, error) {
 
-	if experimentData.Type == Ucb1Type {
+	if experimentData.PolicyType == Ucb1Type {
 		return MakeUCB1(), nil
 	}
 
-	if experimentData.Type == EpsilonGreedyType {
+	if experimentData.PolicyType == EpsilonGreedyType {
 
-		return MakeEpsilonGreedy(experimentData.Params)
+		return MakeEpsilonGreedy(experimentData.Parameters)
 
 	}
 
