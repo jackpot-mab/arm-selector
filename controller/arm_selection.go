@@ -6,10 +6,12 @@ import (
 	"jackpot-mab/arm-selector/policy"
 	"jackpot-mab/arm-selector/service"
 	"net/http"
+	"strings"
 )
 
 type ArmSelectorController struct {
 	ExperimentsParamsService service.ExperimentParamsService
+	RewardPredictorService   service.RewardPredictorService
 }
 
 // @BasePath /api/v1
@@ -44,27 +46,16 @@ func (a *ArmSelectorController) ArmSelectionController(g *gin.Context) {
 		return
 	}
 
-	// Get the value returned by the model
-	mockExpectedReward := []policy.ExpectedReward{
-		{
-			Arm:   policy.Arm{Name: "A"},
-			Pulls: 1,
-			Value: 102,
-		},
-		{
-			Arm:   policy.Arm{Name: "B"},
-			Pulls: 3,
-			Value: 305,
-		},
-		{
-			Arm:   policy.Arm{Name: "C"},
-			Pulls: 12,
-			Value: 308,
-		}}
+	modelPredictions := service.GetMultipleRewardPredictionsParallel(
+		experimentId,
+		experimentData.Arms,
+		deduceInputFeatures(decisionContext, experimentData.ModelParams.InputFeatures),
+		experimentData.ModelParams.OutputClasses,
+		a.RewardPredictorService)
 
 	currentPolicy, _ := policy.MakePolicy(experimentData)
 
-	armSelected := currentPolicy.SelectArm(mockExpectedReward)
+	armSelected := currentPolicy.SelectArm(modelPredictions)
 
 	randomID, _ := id.GenerateRandomID()
 
@@ -75,4 +66,13 @@ func (a *ArmSelectorController) ArmSelectionController(g *gin.Context) {
 
 	g.JSON(http.StatusOK, r)
 
+}
+
+func deduceInputFeatures(context policy.Context, inputFeatures []string) []interface{} {
+	var inputFeaturesContext []interface{}
+	for _, feature := range inputFeatures {
+		// TODO Check input features exist
+		inputFeaturesContext = append(inputFeaturesContext, context[strings.ToLower(feature)])
+	}
+	return inputFeaturesContext
 }

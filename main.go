@@ -24,7 +24,9 @@ func main() {
 		log.Fatalf("Error loading .env file: %v", err)
 	}
 
-	armSelectionCtrl := controller.ArmSelectorController{ExperimentsParamsService: InitExperimentService()}
+	armSelectionCtrl := controller.ArmSelectorController{
+		ExperimentsParamsService: InitExperimentService(),
+		RewardPredictorService:   InitRewardPredictorService()}
 
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	router := gin.Default()
@@ -52,4 +54,16 @@ func InitExperimentService() service.ExperimentParamsService {
 	}
 
 	return service.MakeExperimentsParamsService(ExperimentsParamsRepoUrl, TimeoutMillis)
+}
+
+func InitRewardPredictorService() service.RewardPredictorService {
+	RewardPredictorUrl := os.Getenv("REWARD_PREDICTOR_URL")
+	TimeoutMillis, err := strconv.Atoi(
+		os.Getenv("REWARD_PREDICTOR_TIMEOUT_MILLIS"))
+
+	if err != nil {
+		log.Fatalf("error reading env variable REWARD_PREDICTOR_TIMEOUT_MILLIS")
+	}
+
+	return service.MakeRewardPredictorService(RewardPredictorUrl, TimeoutMillis)
 }

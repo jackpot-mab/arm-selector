@@ -1,6 +1,9 @@
 package policy
 
-import "math"
+import (
+	"math"
+	"strconv"
+)
 
 // UCB1 is a policy that computes a mean_reward or predicted_reward for a context,
 // along with a confidence radius. Then the algorithm selects the higher mean_reward + confidence_radius
@@ -41,14 +44,24 @@ func (e *UCB1) SelectArm(armsExpectedRewards []ExpectedReward) *Arm {
 }
 
 func getArmUCB(arm ExpectedReward, totalPulls int) float64 {
-	radius := math.Sqrt(2 * math.Log(float64(totalPulls)) / float64(arm.Pulls))
+	radius := math.Sqrt(2 * math.Log(float64(totalPulls)) / getPullsParams(arm.Arm.RewardDataParameters))
 	return arm.Value + radius
 }
 
 func getTotalPulls(armsExpectedRewards []ExpectedReward) int {
 	sum := 0
 	for _, a := range armsExpectedRewards {
-		sum = sum + a.Pulls
+		pulls := getPullsParams(a.Arm.RewardDataParameters)
+		sum = int(float64(sum) + pulls)
 	}
 	return sum
+}
+
+func getPullsParams(parameters []RewardDataParameter) float64 {
+	pullsStr := selectParameter("pulls", parameters)
+	if pullsStr == "" {
+		return 0
+	}
+	pulls, _ := strconv.ParseFloat(pullsStr, 64)
+	return pulls
 }
