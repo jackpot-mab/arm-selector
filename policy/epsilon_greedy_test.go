@@ -9,6 +9,7 @@ func TestEpsilonGreedy_SelectArm(t *testing.T) {
 
 	var tests = []struct {
 		name        string
+		arms        []Arm
 		seed        int64
 		alpha       float32
 		armsRewards []ExpectedReward
@@ -16,6 +17,7 @@ func TestEpsilonGreedy_SelectArm(t *testing.T) {
 	}{
 		{
 			name:        "No arms",
+			arms:        []Arm{},
 			seed:        42,
 			alpha:       0.2,
 			armsRewards: []ExpectedReward{},
@@ -23,22 +25,20 @@ func TestEpsilonGreedy_SelectArm(t *testing.T) {
 		},
 		{
 			name:  "Select arm with highest reward",
+			arms:  []Arm{{Name: "A"}, {Name: "B"}, {Name: "C"}},
 			seed:  42,
 			alpha: 0.2,
 			armsRewards: []ExpectedReward{
 				{
 					Arm:   Arm{Name: "A"},
-					Pulls: 1,
 					Value: 102,
 				},
 				{
 					Arm:   Arm{Name: "B"},
-					Pulls: 3,
 					Value: 305,
 				},
 				{
 					Arm:   Arm{Name: "C"},
-					Pulls: 12,
 					Value: 308,
 				},
 			},
@@ -46,22 +46,20 @@ func TestEpsilonGreedy_SelectArm(t *testing.T) {
 		},
 		{
 			name:  "Select a random arm",
+			arms:  []Arm{{Name: "A"}, {Name: "B"}, {Name: "C"}},
 			seed:  131,
 			alpha: 0.2,
 			armsRewards: []ExpectedReward{
 				{
 					Arm:   Arm{Name: "A"},
-					Pulls: 1,
 					Value: 102,
 				},
 				{
 					Arm:   Arm{Name: "B"},
-					Pulls: 3,
 					Value: 305,
 				},
 				{
 					Arm:   Arm{Name: "C"},
-					Pulls: 12,
 					Value: 308,
 				},
 			},
@@ -73,11 +71,11 @@ func TestEpsilonGreedy_SelectArm(t *testing.T) {
 		t.Logf("Executing test => %v", tt.name)
 
 		policy := EpsilonGreedy{
-			alpha: tt.alpha,
+			alpha: float64(tt.alpha),
 			seed:  &tt.seed,
 		}
 
-		armSelected := policy.SelectArm(tt.armsRewards)
+		armSelected := policy.SelectArm(tt.arms, tt.armsRewards)
 
 		assert.Equal(t, tt.selection, armSelected)
 

@@ -26,11 +26,16 @@ func MakeEpsilonGreedy(experimentParams map[string]interface{}) (*EpsilonGreedy,
 	return &EpsilonGreedy{alpha: alpha}, nil
 }
 
-func (e *EpsilonGreedy) SelectArm(armsExpectedRewards []ExpectedReward) *Arm {
+func (e *EpsilonGreedy) SelectArm(arms []Arm, armsExpectedRewards []ExpectedReward) *Arm {
 
 	seed := time.Now().UnixNano()
 	if e.seed != nil {
 		seed = *e.seed
+	}
+
+	if len(armsExpectedRewards) == 0 && len(arms) > 0 {
+		randomIndex := rand.Intn(len(arms))
+		return &arms[randomIndex]
 	}
 
 	// rolls a dice to explore or to exploit

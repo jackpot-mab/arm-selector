@@ -9,6 +9,7 @@ func TestUCB1_SelectArm(t *testing.T) {
 
 	var tests = []struct {
 		name        string
+		arms        []Arm
 		armsRewards []ExpectedReward
 		selection   *Arm
 	}{
@@ -19,24 +20,33 @@ func TestUCB1_SelectArm(t *testing.T) {
 		},
 		{
 			name: "Select arm with highest reward",
+			arms: []Arm{{
+				Name:                 "A",
+				RewardDataParameters: []RewardDataParameter{{Name: "pulls", Value: 1}}},
+				{
+					Name:                 "B",
+					RewardDataParameters: []RewardDataParameter{{Name: "pulls", Value: 3}},
+				},
+				{
+					Name:                 "C",
+					RewardDataParameters: []RewardDataParameter{{Name: "pulls", Value: 12}},
+				},
+			},
 			armsRewards: []ExpectedReward{
 				{
-					Arm:   Arm{Name: "A"},
-					Pulls: 1,
+					Arm:   Arm{Name: "A", RewardDataParameters: []RewardDataParameter{{Name: "pulls", Value: 1}}},
 					Value: 102,
 				},
 				{
-					Arm:   Arm{Name: "B"},
-					Pulls: 3,
+					Arm:   Arm{Name: "B", RewardDataParameters: []RewardDataParameter{{Name: "pulls", Value: 3}}},
 					Value: 305,
 				},
 				{
-					Arm:   Arm{Name: "C"},
-					Pulls: 12,
+					Arm:   Arm{Name: "C", RewardDataParameters: []RewardDataParameter{{Name: "pulls", Value: 12}}},
 					Value: 308,
 				},
 			},
-			selection: &Arm{Name: "C"},
+			selection: &Arm{Name: "C", RewardDataParameters: []RewardDataParameter{{Name: "pulls", Value: 12}}},
 		},
 	}
 
@@ -45,7 +55,7 @@ func TestUCB1_SelectArm(t *testing.T) {
 
 		policy := UCB1{}
 
-		armSelected := policy.SelectArm(tt.armsRewards)
+		armSelected := policy.SelectArm(tt.arms, tt.armsRewards)
 
 		assert.Equal(t, tt.selection, armSelected)
 

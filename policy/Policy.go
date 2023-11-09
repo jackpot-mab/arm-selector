@@ -34,7 +34,7 @@ type ExpectedReward struct {
 type Context map[string]interface{}
 
 type Policy interface {
-	SelectArm(armsExpectedRewards []ExpectedReward) *Arm
+	SelectArm(arms []Arm, armsExpectedRewards []ExpectedReward) *Arm
 }
 
 func selectParameter(paramName string, rewardDataParameter []RewardDataParameter) string {

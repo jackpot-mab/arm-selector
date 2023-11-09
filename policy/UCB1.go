@@ -2,6 +2,7 @@ package policy
 
 import (
 	"math"
+	"math/rand"
 	"strconv"
 )
 
@@ -16,16 +17,17 @@ func MakeUCB1() Policy {
 	return &UCB1{}
 }
 
-func (e *UCB1) SelectArm(armsExpectedRewards []ExpectedReward) *Arm {
-
-	if len(armsExpectedRewards) == 0 {
-		return nil
-	}
+func (e *UCB1) SelectArm(arms []Arm, armsExpectedRewards []ExpectedReward) *Arm {
 
 	totalPulls := getTotalPulls(armsExpectedRewards)
 
-	if totalPulls == 0 {
-		return &armsExpectedRewards[0].Arm
+	if len(arms) == 0 {
+		return nil
+	}
+
+	if len(armsExpectedRewards) == 0 || totalPulls == 0 {
+		randomIndex := rand.Intn(len(arms))
+		return &arms[randomIndex]
 	}
 
 	maxUCB := getArmUCB(armsExpectedRewards[0], totalPulls)
