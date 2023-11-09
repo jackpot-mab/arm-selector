@@ -5,7 +5,6 @@ import (
 	"jackpot-mab/arm-selector/id"
 	"jackpot-mab/arm-selector/policy"
 	"jackpot-mab/arm-selector/service"
-	"math/rand"
 	"net/http"
 	"strings"
 )
@@ -53,16 +52,6 @@ func (a *ArmSelectorController) ArmSelectionController(g *gin.Context) {
 		deduceInputFeatures(decisionContext, experimentData.ModelParams.InputFeatures),
 		experimentData.ModelParams.OutputClasses,
 		a.RewardPredictorService)
-
-	if len(modelPredictions) == 0 {
-		modelPredictions = make([]policy.ExpectedReward, len(experimentData.Arms))
-		for _, a := range experimentData.Arms {
-			modelPredictions = append(modelPredictions, policy.ExpectedReward{
-				Arm:   a,
-				Value: rand.Float64(),
-			})
-		}
-	}
 
 	currentPolicy, _ := policy.MakePolicy(experimentData)
 
