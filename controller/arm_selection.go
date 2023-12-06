@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"jackpot-mab/arm-selector/id"
+	"jackpot-mab/arm-selector/metrics"
 	"jackpot-mab/arm-selector/policy"
 	"jackpot-mab/arm-selector/service"
 	"net/http"
@@ -57,14 +58,22 @@ func (a *ArmSelectorController) ArmSelectionController(g *gin.Context) {
 
 	armSelected := currentPolicy.SelectArm(experimentData.Arms, modelPredictions)
 
-	randomID, _ := id.GenerateRandomID()
+	if armSelected != nil {
+		armName := *armSelected
+		metrics.AmrPulls.WithLabelValues(experimentId, armName.Name)
 
-	r := Response{
-		DecisionId: randomID,
-		Arm:        *armSelected,
+		randomID, _ := id.GenerateRandomID()
+
+		r := Response{
+			DecisionId: randomID,
+			Arm:        armName.Name,
+		}
+
+		g.JSON(http.StatusOK, r)
+
+	} else {
+		g.JSON(http.StatusInternalServerError, "There was an error and the arm could not be chosen.")
 	}
-
-	g.JSON(http.StatusOK, r)
 
 }
 
