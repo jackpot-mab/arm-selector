@@ -6,13 +6,12 @@ import (
 
 var AmrPulls = prometheus.NewCounterVec(
 	prometheus.CounterOpts{
-		Name: "arm_pulls",
+		Name: "arm_selector_arm_pulls",
 		Help: "Total arm pulls.",
 	},
 	[]string{"experiment", "arm"},
 )
 
 func init() {
-	// Register the custom counter metric with Prometheus
 	prometheus.MustRegister(AmrPulls)
 }
