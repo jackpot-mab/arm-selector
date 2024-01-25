@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	ginprometheus "github.com/zsais/go-gin-prometheus"
 	"jackpot-mab/arm-selector/controller"
 	"jackpot-mab/arm-selector/docs"
 	"jackpot-mab/arm-selector/service"
@@ -14,14 +14,6 @@ import (
 	"os"
 	"strconv"
 )
-
-func prometheusHandler() gin.HandlerFunc {
-	h := promhttp.Handler()
-
-	return func(c *gin.Context) {
-		h.ServeHTTP(c.Writer, c.Request)
-	}
-}
 
 func healthCheck(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, "jackpot-mab:arm-selector")
@@ -40,6 +32,9 @@ func main() {
 	docs.SwaggerInfo.BasePath = "/api/v1"
 	router := gin.Default()
 
+	p := ginprometheus.NewPrometheus("gin")
+	p.Use(router)
+
 	v1 := router.Group("/api/v1")
 	{
 		eg := v1.Group("/arm")
@@ -48,7 +43,6 @@ func main() {
 		}
 	}
 
-	router.GET("/metrics", prometheusHandler())
 	router.GET("/", healthCheck)
 	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	router.Run("0.0.0.0:8090")
