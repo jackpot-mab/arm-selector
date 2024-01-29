@@ -31,7 +31,8 @@ func MakeRewardPredictorService(url string, timeoutMillis int) RewardPredictorSe
 }
 
 type RewardPredictorResponse struct {
-	Prediction float64 `json:"prediction"`
+	Prediction    float64   `json:"prediction"`
+	Probabilities []float32 `json:"probabilities"`
 }
 
 type RewardPredictorRequest struct {
@@ -77,7 +78,8 @@ func (rp *RewardPredictorServiceImpl) GetRewardPrediction(
 
 func TransformToExpectedReward(response RewardPredictorResponse, arm policy.Arm) policy.ExpectedReward {
 	return policy.ExpectedReward{
-		Arm:   arm,
-		Value: response.Prediction,
+		Arm:           arm,
+		Value:         response.Prediction,
+		Probabilities: response.Probabilities,
 	}
 }

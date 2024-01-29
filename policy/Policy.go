@@ -27,8 +27,9 @@ type RewardDataParameter struct {
 }
 
 type ExpectedReward struct {
-	Arm   Arm
-	Value float64
+	Arm           Arm
+	Value         float64
+	Probabilities []float32
 }
 
 type Context map[string]interface{}
